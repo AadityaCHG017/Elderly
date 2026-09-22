@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 
+	"eldercare/internal/auth"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,6 +29,15 @@ func main() {
 	userHandler := users.NewHandler(userService)
 
 	router.POST("/users", userHandler.CreateUser)
+
+	authService := auth.NewService(
+		userRepository,
+		cfg.JWTSecret,
+	)
+
+	authHandler := auth.NewHandler(authService)
+
+	router.POST("/auth/login", authHandler.Login)
 
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{

@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"strings"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Service struct {
@@ -44,10 +46,17 @@ func (s *Service) CreateUser(
 		return nil, errors.New("role is required")
 	}
 
+	hashedPassword, err := bcrypt.GenerateFromPassword(
+		[]byte(passwordHash), bcrypt.DefaultCost,
+	)
+	if err != nil {
+		return nil, errors.New("Failed To hash password")
+	}
+
 	user := &User{
 		Name:         name,
 		Email:        email,
-		PasswordHash: passwordHash,
+		PasswordHash: string(hashedPassword),
 		Role:         role,
 	}
 

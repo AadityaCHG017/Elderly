@@ -1,0 +1,13 @@
+# Environment variables
+.env
+.env.*
+
+# Go build files
+/bin/
+/tmp/
+
+# IDE files
+.vscode/
+
+# macOS
+.DS_Store

@@ -39,6 +39,26 @@ func main() {
 
 	router.POST("/auth/login", authHandler.Login)
 
+	protected := router.Group("/api")
+	protected.Use(auth.AuthMiddleware(cfg.JWTSecret))
+
+	protected.GET("/profile", func(c *gin.Context) {
+
+		claims, exists := c.Get("claims")
+
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "claims not found",
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": "You are authenticated",
+			"claims":  claims,
+		})
+	})
+
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Eldercare Api is Running",
